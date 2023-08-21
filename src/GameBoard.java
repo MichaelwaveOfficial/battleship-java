@@ -1,17 +1,15 @@
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class GameBoard {
-
     // Game properties.
     final int boardSize = 10;
     char seaChar = '~';
-     char shipChar = 'O';
-    char rowChar = 'A';
-    int colInt = 1;
+    char shipChar = 'O';
+    char hit = 'X';
+    // multi-dimensional array to simulate game board.
+    char [][] gameBoard = new char[boardSize][boardSize];
 
     // Initialisation of the battleships and their properties.
     ArrayList<Battleship> ships = new ArrayList<>();
@@ -22,21 +20,50 @@ public class GameBoard {
     Battleship destroyer = new Battleship("Destroyer", 2);
     Scanner scanner = new Scanner(System.in);
 
-    // multi-dimensional array to simulate game board.
-    char [][] gameBoard = new char[boardSize][boardSize];
-
     // Methods
 
-    public void gameInitialisation() {
-        // produce the game board.
-        generateGameBoard();
+    public void beginGame() {
 
-        // prompt player to place their battleships.
-        deployPlayerBattleships();
+        // Add the ships to the Arraylist.
+        ships.add(aircraftCarrier);
+        ships.add(battleship);
+        ships.add(submarine);
+        ships.add(cruiser);
+        ships.add(destroyer);
+
+        printBoard(gameBoard);
+
+        // Loop over ship objects by getting their names and sizes from Arraylist.
+        for (Battleship ship : ships) {
+            System.out.println("Enter the coordinates of the " + ship.getName() + " (" + ship.getSize() + " cells):");
+            String first = scanner.next(); // Take first co-ordinate.
+            placeShips(first);
+            String second = scanner.next();
+            placeShips(second);
+        }
+        scanner.close();
     }
 
-    // Method to generate the game board in the console.
-    public void generateGameBoard() {
+    public void placeShips(String coordinate) {
+
+        char inputRow = coordinate.charAt(0); // get char for row input.
+        int inputCol = Integer.parseInt(coordinate.substring(1)); // get int for col input.
+
+        int row = Character.toUpperCase(inputRow) - 'A'; // Convert character to row index.
+        int col = inputCol - 1; // Convert number to row index.
+
+        if (coordinatesValid(row, col, boardSize)) {
+            gameBoard[row][col] = shipChar;
+            printBoard(gameBoard);
+        } else {
+            System.out.println("Invalid coordinates. Please enter valid coordinates.");
+        }
+    }
+
+    public void printBoard(char[][] gameBoard) {
+
+        char rowChar = 'A';
+        int colInt = 1;
 
         // Loop over column ints respective of board size.
         for (int col = 0; col < boardSize; col++) System.out.print(" " + colInt++);
@@ -57,48 +84,8 @@ public class GameBoard {
             System.out.println(); // Move onto next line
         }
     }
-    // Loop over available ships and get their coordinates.
-    public void deployPlayerBattleships() {
-        // Add the ships to the Arraylist.
-        ships.add(aircraftCarrier);
-        ships.add(battleship);
-        ships.add(submarine);
-        ships.add(cruiser);
-        ships.add(destroyer);
 
-        // Loop over ship objects by getting their names and sizes from Arraylist.
-        for (Battleship ship : ships) {
-            System.out.println("Enter the coordinates of the " + ship.getName() + " (" + ship.getSize() + " cells):");
-            String firstCoordinate = scanner.next(); // Take first co-ordinate.
-            readUserInput(firstCoordinate);
-            String secondCoordinate = scanner.next();
-            readUserInput(secondCoordinate);
-        }
-    }
-
-    // Take users co-ordinate input and place their ships on the grid.
-    public void readUserInput(String coordinate) {
-
-        try {
-
-            char inputRow = coordinate.charAt(0); // get char for row input.
-            int inputCol = Integer.parseInt(coordinate.substring(1)); // get int for col input.
-
-            int gridRow = Character.toUpperCase(inputRow) - 'A'; // Convert character to row index.
-            int gridCol = inputCol - 1; // Convert number to row index.
-
-            if (gameBoard[inputRow][inputCol] != 'O') {
-
-            } else {
-                System.out.println("Error! Wrong ship location! Try again:");
-            }
-
-        } catch (InputMismatchException e) {
-            System.out.println("Please enter a valid co-ordinate within the range displayed.");
-        } finally {
-            scanner.close();
-        }
-
-
+    public boolean coordinatesValid(int row, int col, int boardSize) {
+        return row >= 0 && row < boardSize && col >= 0 && col < boardSize;
     }
 }
