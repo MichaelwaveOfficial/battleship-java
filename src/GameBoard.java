@@ -47,6 +47,8 @@ public class GameBoard {
         // Loop over ship objects by getting their names and sizes from Arraylist.
         for (Battleship ship : ships) {
 
+            System.out.println("Enter the coordinates of the " + ship.getName() + " (" + ship.getSize() + " cells):");
+
             String first = scanner.next(); // Take first co-ordinate.
             Coordinate firstCoordinate = readInput(first);
 
