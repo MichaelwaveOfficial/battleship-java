@@ -9,6 +9,7 @@ public class GameBoard {
     private final char SEA_CHAR = '~';
     private final char SHIP_CHAR = 'O';
     private final char HIT = 'X';
+    private int timesInvoked = 0;
 
     // multi-dimensional array to simulate game board.
     char [][] gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
@@ -124,13 +125,14 @@ public class GameBoard {
             System.out.print(rowChar++);
 
             // fill each element within the game board array with sea chars.
-            for (char[] grid : gameBoard) Arrays.fill(grid, SEA_CHAR);
+            if (timesInvoked < 1) for (char[] grid : gameBoard) Arrays.fill(grid, SEA_CHAR);
 
             // print out the entire game board once it has been filled.
             for (int columns = 0; columns < gameBoard.length; columns++) System.out.print(" " + gameBoard[row][columns]);
 
             // Move onto next line
             System.out.println();
+            timesInvoked++;
         }
     }
 
@@ -146,4 +148,7 @@ public class GameBoard {
     }
 }
 
+/**
+ * Think print board method is filling with sea chars every time its called, rendering changes useless.
+ */
 
