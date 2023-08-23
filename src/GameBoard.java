@@ -28,7 +28,6 @@ public class GameBoard {
     // Initialise scanner for user input.
     Scanner scanner = new Scanner(System.in);
 
-
     // Methods
 
     /**
@@ -74,8 +73,6 @@ public class GameBoard {
         int row = Character.toUpperCase(inputRow) - 'A'; // Convert character to row index.
         int col = inputCol - 1; // Convert number to row index.
 
-        System.out.println("row : " + row + " column : " + col); // okay
-
         return new Coordinate(row, col); // works as intended.
     }
 
@@ -91,15 +88,31 @@ public class GameBoard {
 
         for (Coordinate coordinate : coordinates) {
 
+            // Get X and Y of coordinate object to loop over.
             int x = coordinate.getX();
             int y = coordinate.getY();
 
+            // Think this is the causative agent of all issues.
+            // Get start and end of columns and rows
+            int startRow = Math.min(x, x);
+            int endRow = Math.max(x, x);
+
+            int startCol = Math.min(y, y);
+            int endCol = Math.max(y, y);
+
+            /**
+             * If coordinates are valid, loop over board array and fill
+             *      specified grid areas placing the ships.
+             */
             if (coordinatesValid(x, y, BOARD_SIZE)) {
-                gameBoard[x][y] = SHIP_CHAR;
+                for (int row = startRow; row <= endRow; row++) {
+                    for (int col = startCol; col <= endCol; col++) gameBoard[row][col] = SHIP_CHAR;
+                }
             } else {
                 System.out.println("Invalid coordinates. Please enter valid coordinates.");
             }
         }
+        // Reprint the updated game board.
         printBoard(gameBoard);
     }
 
@@ -108,9 +121,13 @@ public class GameBoard {
      * @param gameBoard
      */
     public void printBoard(char[][] gameBoard) {
+
         // Introduce the boards rows and columns as local variables.
         char rowChar = 'A';
         int colInt = 1;
+
+        // Format board columns.
+        System.out.print(" ");
 
         // Loop over column ints respective of board size.
         for (int col = 0; col < BOARD_SIZE; col++) System.out.print(" " + colInt++);
@@ -121,10 +138,10 @@ public class GameBoard {
         // Loop over row chars respective of board size.
         for (int row = 0; row < BOARD_SIZE; row++) {
 
-            // Increment chars for row on the gameboard.
+            // Increment chars for row on the game board.
             System.out.print(rowChar++);
 
-            // fill each element within the game board array with sea chars.
+            // Only fill each element within the game board using sea chars if method invoked for the first time.
             if (timesInvoked < 1) for (char[] grid : gameBoard) Arrays.fill(grid, SEA_CHAR);
 
             // print out the entire game board once it has been filled.
@@ -132,6 +149,8 @@ public class GameBoard {
 
             // Move onto next line
             System.out.println();
+
+            // Increment timesInvoked variable.
             timesInvoked++;
         }
     }
