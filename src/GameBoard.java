@@ -78,32 +78,33 @@ public class GameBoard {
 
     /**
      *
+     * Method fills in-between coordinates but does not seem to plot correctly. ...
      * @param c1
      * @param c2
+    */
+
+    /**
      */
     public void placeShips(Coordinate c1, Coordinate c2) {
 
-        // Think this is the causative agent of all issues.
-        // Get start and end of columns and rows.
-        int startRow = Math.min(c1.getX(), c2.getX());
-        int endRow = Math.max(c1.getY(), c2.getY());
+        // first coordinate.
+        int firstRow = c1.getX();
+        int firstCol = c1.getY();
 
-        int startCol = Math.min(c1.getX(), c2.getX());
-        int endCol = Math.max(c1.getY(), c2.getY());
+        // second coordinate.
+        int secondRow = c2.getX();
+        int secondCol = c2.getY();
 
-        /**
-         * If coordinates are valid, loop over board array and fill
-         *      specified grid areas placing the ships.
-         */
-        if (coordinatesValid(startRow, startCol, BOARD_SIZE) && coordinatesValid(endRow, endCol, BOARD_SIZE)) {
-            for (int row = startRow; row <= endRow; row++) {
-                for (int col = startCol; col <= endCol; col++) gameBoard[row][col] = SHIP_CHAR;
+
+        if (coordinatesValid(x, y, BOARD_SIZE)) {
+            //System.out.println( "x : " + x + ", y : " + y)
+            for (int row = c1.getX(); row <= c2.getX(); row++) {
+                for (int col = c1.getY(); col <= c2.getY(); col++) gameBoard[row][col] = SHIP_CHAR;
             }
         } else {
             System.out.println("Invalid coordinates. Please enter valid coordinates.");
         }
 
-        // Reprint the updated game board.
         printBoard(gameBoard);
     }
 
