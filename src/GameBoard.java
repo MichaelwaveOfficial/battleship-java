@@ -78,13 +78,9 @@ public class GameBoard {
 
     /**
      *
-     * Method fills in-between coordinates but does not seem to plot correctly. ...
      * @param c1
      * @param c2
     */
-
-    /**
-     */
     public void placeShips(Coordinate c1, Coordinate c2) {
 
         // first coordinate.
@@ -95,16 +91,16 @@ public class GameBoard {
         int secondRow = c2.getX();
         int secondCol = c2.getY();
 
-
-        if (coordinatesValid(x, y, BOARD_SIZE)) {
-            //System.out.println( "x : " + x + ", y : " + y)
-            for (int row = c1.getX(); row <= c2.getX(); row++) {
-                for (int col = c1.getY(); col <= c2.getY(); col++) gameBoard[row][col] = SHIP_CHAR;
+        // Take coordinate points and fill the gaps between them.
+        if (coordinatesValid(firstRow, firstCol, BOARD_SIZE) && coordinatesValid(secondRow, secondCol, BOARD_SIZE)) {
+            for (int row = firstRow; row <= secondRow; row++) {
+                for (int col = firstCol; col <= secondCol; col++) gameBoard[row][col] = SHIP_CHAR;
             }
         } else {
             System.out.println("Invalid coordinates. Please enter valid coordinates.");
         }
 
+        // Reprint the updated board to the users console.
         printBoard(gameBoard);
     }
 
@@ -159,7 +155,4 @@ public class GameBoard {
     }
 }
 
-/**
- * Think print board method is filling with sea chars every time its called, rendering changes useless.
- */
 
