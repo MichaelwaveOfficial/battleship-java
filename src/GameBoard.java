@@ -9,7 +9,7 @@ public class GameBoard {
     private final char SEA_CHAR = '~';
     private final char SHIP_CHAR = 'O';
     private final char HIT = 'X';
-    private int timesInvoked = 0;
+    private int timesInvoked;
 
     // multi-dimensional array to simulate game board.
     char [][] gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
@@ -57,7 +57,7 @@ public class GameBoard {
 
             placeShips(firstCoordinate, secondCoordinate);
         }
-        scanner.close();
+        scanner.close(); // Rejig this, just separate co ords here? into ints, pass into placeShips func.
     }
 
     /**
@@ -83,35 +83,26 @@ public class GameBoard {
      */
     public void placeShips(Coordinate c1, Coordinate c2) {
 
-        coordinates.add(c1);
-        coordinates.add(c2);
+        // Think this is the causative agent of all issues.
+        // Get start and end of columns and rows.
+        int startRow = Math.min(c1.getX(), c2.getX());
+        int endRow = Math.max(c1.getY(), c2.getY());
 
-        for (Coordinate coordinate : coordinates) {
+        int startCol = Math.min(c1.getX(), c2.getX());
+        int endCol = Math.max(c1.getY(), c2.getY());
 
-            // Get X and Y of coordinate object to loop over.
-            int x = coordinate.getX();
-            int y = coordinate.getY();
-
-            // Think this is the causative agent of all issues.
-            // Get start and end of columns and rows
-            int startRow = Math.min(x, x);
-            int endRow = Math.max(x, x);
-
-            int startCol = Math.min(y, y);
-            int endCol = Math.max(y, y);
-
-            /**
-             * If coordinates are valid, loop over board array and fill
-             *      specified grid areas placing the ships.
-             */
-            if (coordinatesValid(x, y, BOARD_SIZE)) {
-                for (int row = startRow; row <= endRow; row++) {
-                    for (int col = startCol; col <= endCol; col++) gameBoard[row][col] = SHIP_CHAR;
-                }
-            } else {
-                System.out.println("Invalid coordinates. Please enter valid coordinates.");
+        /**
+         * If coordinates are valid, loop over board array and fill
+         *      specified grid areas placing the ships.
+         */
+        if (coordinatesValid(startRow, startCol, BOARD_SIZE) && coordinatesValid(endRow, endCol, BOARD_SIZE)) {
+            for (int row = startRow; row <= endRow; row++) {
+                for (int col = startCol; col <= endCol; col++) gameBoard[row][col] = SHIP_CHAR;
             }
+        } else {
+            System.out.println("Invalid coordinates. Please enter valid coordinates.");
         }
+
         // Reprint the updated game board.
         printBoard(gameBoard);
     }
