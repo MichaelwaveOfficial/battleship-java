@@ -60,13 +60,19 @@ public class GameBoard {
 
             System.out.println("Enter the coordinates of the " + ship.getName() + " (" + ship.getSize() + " cells):");
 
-            String first = scanner.next(); // Take first co-ordinate.
-            Coordinate firstCoordinate = readInput(first);
+            try {
+                String first = scanner.next(); // Take first co-ordinate.
+                Coordinate firstCoordinate = readInput(first);
 
-            String second = scanner.next();
-            Coordinate secondCoordinate = readInput(second);
+                String second = scanner.next();
+                Coordinate secondCoordinate = readInput(second);
 
-            placeShips(firstCoordinate, secondCoordinate, ship.getSize(), ship.getName());
+                placeShips(firstCoordinate, secondCoordinate, ship.getSize(), ship.getName());
+
+            } catch (InputMismatchException i) {
+
+                System.out.println("Invalid coordinates. Please enter valid coordinates.");
+            }
         }
         scanner.close();
     }
@@ -102,24 +108,34 @@ public class GameBoard {
         int secondCol = c2.getY();
 
         // Get lengths of the coordinates placed.
-        int shipsLengthRow = secondRow - firstRow;
-        int shipsLengthCol = secondCol - firstCol;
+        int shipsLengthRow = (secondRow - firstRow) + 1;
+        int shipsLengthCol = (secondCol - firstCol) + 1;
 
-        try {
-            if (shipsLengthRow + 1 > shipSize || shipsLengthCol + 1 > shipSize) {
-                // Needs to take user back to specific part of the loop.
-                System.out.println("Error! Wrong length of the " + shipName + "! Try again:");
-                beginGame();
+        // Check ship is not too close to another
+        //System.out.println("Error! You placed it too close to another one. Try again:");
+
+
+        // Checks to see if the rows and columns match.
+        if (firstRow != secondRow || firstCol != secondCol) {
+            System.out.println("Error! Wrong ship location! Try again:");
+        }
+
+        // Checks ships coordinates are within the ships length.
+        if (shipsLengthRow > shipSize || shipsLengthCol > shipSize) {
+            // Needs to take user back to specific part of the loop.
+            System.out.println("Error! Wrong length of the " + shipName + "! Try again:");
+            beginGame();
+        }
+
+        // Take coordinate points and fill the gaps between them.
+        if (coordinatesValid(firstRow, firstCol) && coordinatesValid(secondRow, secondCol)) {
+            for (int row = firstRow; row <= secondRow; row++) {
+                for (int col = firstCol; col <= secondCol; col++) gameBoard[row][col] = SHIP_CHAR;
             }
-            // Take coordinate points and fill the gaps between them.
-            if (coordinatesValid(firstRow, firstCol) && coordinatesValid(secondRow, secondCol)) {
-                for (int row = firstRow; row <= secondRow; row++) {
-                    for (int col = firstCol; col <= secondCol; col++) gameBoard[row][col] = SHIP_CHAR;
-                }
-            }
-        } catch (InputMismatchException e) {
+        } else {
             System.out.println("Invalid coordinates. Please enter valid coordinates.");
         }
+
 
         // Reprint the updated board to the users console.
         printBoard(gameBoard);
