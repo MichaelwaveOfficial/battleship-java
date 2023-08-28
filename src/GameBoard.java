@@ -15,17 +15,9 @@ public class GameBoard {
     // multi-dimensional array to simulate game board.
     private char [][] gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
 
-
-    // Initialisation of the battleships and their properties.
-    private ArrayList<Battleship> ships = new ArrayList<>();
-    private Battleship aircraftCarrier = new Battleship("Aircraft Carrier", 5);
-    private Battleship battleship = new Battleship("Battleship", 4);
-    private Battleship submarine = new Battleship("Submarine", 3);
-    private Battleship cruiser = new Battleship("Cruiser", 3);
-    private Battleship destroyer = new Battleship("Destroyer", 2);
-
     // Initialise scanner for user input.
     private Scanner scanner = new Scanner(System.in);
+
 
     // Methods
 
@@ -47,16 +39,11 @@ public class GameBoard {
      */
     private void battleshipsSetup() {
 
-        // Add the ships to the Arraylist.
-        ships.add(aircraftCarrier);
-        ships.add(battleship);
-        ships.add(submarine);
-        ships.add(cruiser);
-        ships.add(destroyer);
-
+        // Initialise ships class to access its methods.
+        Ships ships = new Ships();
 
         // Loop over ship objects by getting their names and sizes from Arraylist.
-        for (Battleship ship : ships) {
+        for (Battleship ship : ships.deployShips()) {
 
             System.out.println("Enter the coordinates of the " + ship.getName() + " (" + ship.getSize() + " cells):");
 
