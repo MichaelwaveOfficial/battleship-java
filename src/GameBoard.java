@@ -30,6 +30,7 @@ public class GameBoard {
 
         // present the user with their battleships.
         battleshipsSetup();
+
     }
 
     /**
@@ -46,20 +47,14 @@ public class GameBoard {
 
             System.out.println("Enter the coordinates of the " + ship.getName() + " (" + ship.getSize() + " cells):");
 
-            try {
+            String first = scanner.next(); // Take first co-ordinate.
+            Coordinate firstCoordinate = readInput(first);
 
-                String first = scanner.next(); // Take first co-ordinate.
-                Coordinate firstCoordinate = readInput(first);
+            String second = scanner.next();
+            Coordinate secondCoordinate = readInput(second);
 
-                String second = scanner.next();
-                Coordinate secondCoordinate = readInput(second);
+            placeShips(firstCoordinate, secondCoordinate, ship);
 
-                placeShips(firstCoordinate, secondCoordinate, ship);
-
-            } catch (InputMismatchException i) {
-
-                System.out.println("Invalid coordinates. Please enter valid coordinates.");
-            }
         }
 
         scanner.close();
@@ -99,31 +94,37 @@ public class GameBoard {
         int shipsLengthRow = (secondRow - firstRow) + 1;
         int shipsLengthCol = (secondCol - firstCol) + 1;
 
-        if (coordinatesProximityCheck(firstRow, firstCol, secondRow, secondCol)) {
-            System.out.println("Proximity Success");
-        } else {
-            System.out.println("Error! You placed it too close to another one. Try again:");
-        }
+        try {
 
-        // Checks to see if the rows and columns match.
-        if (firstRow == secondRow || firstCol == secondCol) {
+            if (coordinatesProximityCheck(firstRow, firstCol, secondRow, secondCol)) {
+                System.out.println("Proximity Success");
+            } else {
+                System.out.println("Error! You placed it too close to another one. Try again:");
+            }
 
-            // Take coordinate points and fill the gaps between them.
-            if (coordinatesInRange(firstRow, firstCol) && coordinatesInRange(secondRow, secondCol)) {
+            // Checks to see if the rows and columns match.
+            if (firstRow == secondRow || firstCol == secondCol) {
 
-                if (shipsLengthRow > ship.getSize() || shipsLengthCol > ship.getSize()) {
+                // Take coordinate points and fill the gaps between them.
+                if (coordinatesInRange(firstRow, firstCol) && coordinatesInRange(secondRow, secondCol)) {
 
-                    System.out.println("Error! Wrong length of the " + ship.getName() + "! Try again:");
+                    if (shipsLengthRow > ship.getSize() || shipsLengthCol > ship.getSize()) {
 
-                } else {
+                        System.out.println("Error! Wrong length of the " + ship.getName() + "! Try again:");
 
-                    for (int row = firstRow; row <= secondRow; row++) {
-                        for (int col = firstCol; col <= secondCol; col++) gameBoard[row][col] = SHIP_CHAR;
+                    } else {
+
+                        for (int row = firstRow; row <= secondRow; row++) {
+                            for (int col = firstCol; col <= secondCol; col++) gameBoard[row][col] = SHIP_CHAR;
+                        }
                     }
                 }
+            } else {
+                System.out.println("Error! Wrong ship location! Try again:");
             }
-        } else {
-            System.out.println("Error! Wrong ship location! Try again:");
+
+        } catch (InputMismatchException i) {
+            System.out.println("Invalid coordinates. Please enter valid coordinates.");
         }
 
         // Reprint the updated board to the users console.
@@ -190,14 +191,14 @@ public class GameBoard {
     }
 
     private boolean coordinatesProximityCheck(int firRow, int firCol, int secRow, int secCol) {
-        return firRow - secRow > 1 && firCol - secCol > 1;
+        return firRow - secRow >= 1 && firCol - secCol >= 1;
     }
 
 }
 
 /**
  * Introduce desired error handling.
- *      ** Ships too close // ontop of each other.
+ *      ** Ships too close // on top of each other.
  *      retry ship rather than moving onto next.
  */
 
