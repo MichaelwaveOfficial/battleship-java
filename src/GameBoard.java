@@ -200,6 +200,17 @@ public class GameBoard {
  * Introduce desired error handling.
  *      ** Ships too close // on top of each other.
  *      retry ship rather than moving onto next.
+ *
+ *
+         * Loop over each indiviudal ship if co ords wrong.
+         * Not sure distance check works either.
+         * Get working, worry later about optimisation.
+         * Checks seem to be performing wrong in their own methods...
+         *
+         * try catching not working to loop over specific ships.
+         * re-write class?
+         * Distance checking is also broken.
+         * Few other bugs.
  */
 
 
