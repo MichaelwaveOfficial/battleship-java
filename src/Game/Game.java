@@ -108,9 +108,12 @@ public class Game {
      * @param second integer array representing second coordinate in computer readable format.
      */
     private static void placeBattleshipOnBoard(int[] first, int[] second) {
+        // Finds lowest and highest row and column values in case user enters coordinates backwards!
+        int lowestRow = Math.min(first[0], second[0]), highestRow = Math.max(first[0], second[0]);
+        int lowestColumn = Math.min(first[1], second[1]), highestColumn = Math.max(first[1], second[1]);
         // Start from first coordinate and stopping once the second one is reached.
-        for (int row = first[0]; row <= second[0]; row++) {
-            for (int col = first[1]; col <= second[1]; col++) gameBoard[row][col] = SHIP;
+        for (int row = lowestRow; row <= highestRow; row++) {
+            for (int col = lowestColumn; col <= highestColumn; col++) gameBoard[row][col] = SHIP;
         }
         // Print the updated game board for the user to see.
         printGameBoard(gameBoard);
