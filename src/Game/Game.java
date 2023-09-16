@@ -1,9 +1,9 @@
-package Game;
+package battleship;
 
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class Game {
+public class Main {
     // Game board properties.
     private static final int BOARD_SIZE = 10;
     // Initialise multi dimensional game board array.
@@ -55,6 +55,7 @@ public class Game {
         }
         // Increment number of times method has been called.
         timesInvoked++;
+        System.out.println();
     }
 
     /**
@@ -62,19 +63,27 @@ public class Game {
      */
     private static void promptUser() {
         // Initialise Ships object where ships will be added to a list.
-        ShipList ships = new ShipList();
+        Ships ships = new Ships();
         // Loop over ships using lambda expression.
         ships.deployShips().forEach(battleship -> {
             // Print out ship details (name + size), then take coordinate input.
-            System.out.println("Enter the coordinates of the " + battleship.getName() + " (" + battleship.getSize() + " cells):");
+            System.out.println("Enter the coordinates of the " + battleship.getName() + " (" + battleship.getSize() + " cells):\n");
             while (true) {
-                String firstCoordinate = scanner.next(), secondCoordinate = scanner.next();
-                // Convert string input into integer arrays storing row and column per.
-                int[] first = convertCoordinates(firstCoordinate), second = convertCoordinates(secondCoordinate);
-                // Check coordinates provided meet requirements.
-                if (checkCoordinates(first, second, battleship)) {
-                    // Break if requirements met.
-                    break;
+                // Loop over input stage until requirements satisfied.
+                try {
+                    // Scanner takes first and second coordinate points as strings.
+                    String firstCoordinate = scanner.next(), secondCoordinate = scanner.next();
+                    // Convert string input into integer arrays storing row and column per.
+                    int[] first = convertCoordinates(firstCoordinate), second = convertCoordinates(secondCoordinate);
+                    // Check coordinates provided meet requirements.
+                    if (checkCoordinates(first, second, battleship)) {
+                        // Break if requirements met.
+                        break;
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage().contains("Error") ? "\n" + e.getMessage()
+                            : "\n" + new Exception(String.format("Error! %s. Try again:" + "\n",
+                            e.getLocalizedMessage())).getMessage());
                 }
             }
         });
@@ -115,6 +124,7 @@ public class Game {
         for (int row = lowestRow; row <= highestRow; row++) {
             for (int col = lowestColumn; col <= highestColumn; col++) gameBoard[row][col] = SHIP;
         }
+        System.out.println();
         // Print the updated game board for the user to see.
         printGameBoard(gameBoard);
     }
@@ -131,16 +141,16 @@ public class Game {
         // Get specific char from coordinate array.
         int rowLength = second[0] - first[0], columnLength = second[1] - first[1];
         // Check coordinates provided meet conditions.
-        if (rowLength > ship.getSize() || columnLength > ship.getSize()) {
+        if (rowLength >= ship.getSize() || columnLength >= ship.getSize()) {
             // If coordinates do not fall within the ship size constraints.
-            String output = String.format("Error! Wrong length of the %s! Try again:", ship.getName());
+            String output = String.format("Error! Wrong length of the %s! Try again:\n", ship.getName());
             System.out.println(output);
         } else if (first[0] != second[0] && first[1] != second[1]) {
             // Either columns or rows do not match from coordinates.
-            System.out.println("Error! Wrong ship location! Try again:");
-        } else if (coordinateProximityCheck(first) && coordinateProximityCheck(second)) {
+            System.out.println("Error! Wrong ship location! Try again:\n");
+        } else if (coordinateProximityCheck(first, second)) {
             // Ship place on or too close to preexisting ship.
-            System.out.println("Error! You placed it too close to another one. Try again:");
+            System.out.println("Error! You placed it too close to another one. Try again:\n");
         } else {
             // Place input on board if all conditions are met.
             placeBattleshipOnBoard(first, second);
@@ -152,20 +162,22 @@ public class Game {
 
     /**
      *
-     * @param coordinate takes coordinate array.
-     * @return false(no ship present or too close to pre-existing).
+     * @param first take first coordinate given.
+     * @param second take second coordinate given.
+     * @return true if ship char is found present in grid location. Otherwise, return false.
      */
-    private static boolean coordinateProximityCheck(int[] coordinate) {
+    private static boolean coordinateProximityCheck(int[] first, int[] second) {
+        // Get lowest rows, columns and highest rows and columns to loop through.
+        int lowestRow = Math.min(first[0], second[0]), highestRow = Math.max(first[0], second[0]);
+        int lowestColumn = Math.min(first[1], second[1]), highestColumn = Math.max(first[1], second[1]);
         // Loop over rows starting from one cell before and after the coordinates.
-        for(int row = coordinate[0] - 1; row <= coordinate[0] + 1; row++) {
+        for(int row = lowestRow - 1; row <= highestRow + 1; row++) {
             // Loop over columns starting from one cell before and after the coordinates.
-            for (int column = coordinate[1] - 1; column <= coordinate[1] + 1; column++) {
+            for (int column = lowestColumn - 1; column <= highestColumn + 1; column++) {
                 // if coordinates within constraints and char representing ship present, return true.
                 if (row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE)
                     if (gameBoard[row][column] == SHIP) return true;
             }
-        }
-        // Return false if no ships are present within the boundaries searched.
-        return false;
+        } return false; // Return false if no ships are present within the boundaries searched.
     }
 }
