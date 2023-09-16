@@ -9,7 +9,7 @@ public class Main {
     // Initialise multi dimensional game board array.
     private static char[][] gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
     // Chars representing status of cells on the board.
-    private static final char SEA = '~', SHIP = 'O';
+    private static final char SEA = '~', SHIP = 'O', HIT = 'X', MISS = 'M';
     // Variable to track number of times method has been invoked.
     private static int timesInvoked = 0;
     // Initialise scanner for taking user input.
@@ -138,10 +138,13 @@ public class Main {
      * @return false unless all constraints are met.
      */
     private static boolean checkCoordinates(int[] first, int[] second, Battleship ship) {
+        // Get array keys
+        int lowestRow = Math.min(first[0], second[0]), highestRow = Math.max(first[0], second[0]);
+        int lowestColumn = Math.min(first[1], second[1]), highestColumn = Math.max(first[1], second[1]);
         // Get specific char from coordinate array.
-        int rowLength = second[0] - first[0], columnLength = second[1] - first[1];
+        int rowLength = highestRow - lowestRow, columnLength = highestColumn - lowestColumn;
         // Check coordinates provided meet conditions.
-        if (rowLength >= ship.getSize() || columnLength >= ship.getSize()) {
+        if (rowLength != ship.getSize() - 1 && columnLength != ship.getSize() - 1) {
             // If coordinates do not fall within the ship size constraints.
             String output = String.format("Error! Wrong length of the %s! Try again:\n", ship.getName());
             System.out.println(output);
@@ -167,7 +170,6 @@ public class Main {
      * @return true if ship char is found present in grid location. Otherwise, return false.
      */
     private static boolean coordinateProximityCheck(int[] first, int[] second) {
-        // Get lowest rows, columns and highest rows and columns to loop through.
         int lowestRow = Math.min(first[0], second[0]), highestRow = Math.max(first[0], second[0]);
         int lowestColumn = Math.min(first[1], second[1]), highestColumn = Math.max(first[1], second[1]);
         // Loop over rows starting from one cell before and after the coordinates.
