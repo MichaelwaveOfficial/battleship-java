@@ -4,12 +4,12 @@ import java.util.Scanner;
 public class Game {
     // Game board properties.
     private static final int BOARD_SIZE = 10;
+    // Variable to track number of times method has been invoked.
+    private static int timesInvoked = 0;
     // Initialise multi dimensional game board array.
     private static char[][] gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
     // Chars representing status of cells on the board.
     private static final char SEA = '~', SHIP = 'O', HIT = 'X', MISS = 'M';
-    // Variable to track number of times method has been invoked.
-    private static int timesInvoked = 0;
     // Initialise scanner for taking user input.
     private static final Scanner scanner = new Scanner(System.in);
 
@@ -93,12 +93,9 @@ public class Game {
      * @param second integer array representing second coordinate in computer readable format.
      */
     private static void placeBattleshipOnBoard(Coordinate first, Coordinate second) {
-        // Finds lowest and highest row and column values in case user enters coordinates backwards!
-        int lowestRow = Math.min(first.getRow(), second.getRow()), highestRow = Math.max(first.getRow(), second.getRow());
-        int lowestColumn = Math.min(first.getColumn(), second.getColumn()), highestColumn = Math.max(first.getColumn(), second.getColumn());
         // Start from first coordinate and stopping once the second one is reached.
-        for (int row = lowestRow; row <= highestRow; row++) {
-            for (int col = lowestColumn; col <= highestColumn; col++) gameBoard[row][col] = SHIP;
+        for (int row = lowestCoordinate(first, second).getRow(); row <= highestCoordinate(first, second).getRow(); row++) {
+            for (int col = lowestCoordinate(first, second).getColumn(); col <= highestCoordinate(first, second).getColumn(); col++) gameBoard[row][col] = SHIP;
         }
         System.out.println();
         // Print the updated game board for the user to see.
@@ -178,11 +175,9 @@ public class Game {
      * @return false unless all constraints are met.
      */
     private static boolean checkCoordinates(Coordinate first, Coordinate second, Battleship ship) {
-        // Get array keys
-        int lowestRow = Math.min(first.getRow(), second.getRow()), highestRow = Math.max(first.getRow(), second.getRow());
-        int lowestColumn = Math.min(first.getColumn(), second.getColumn()), highestColumn = Math.max(first.getColumn(), second.getColumn());
         // Get specific char from coordinate array.
-        int rowLength = highestRow - lowestRow, columnLength = highestColumn - lowestColumn;
+        int rowLength = highestCoordinate(first, second).getRow() - lowestCoordinate(first, second).getRow(),
+                columnLength = highestCoordinate(first, second).getColumn() -lowestCoordinate(first, second).getColumn();
         // Check coordinates provided meet conditions.
         if (checkShipLength(rowLength, columnLength, ship)) {
             // If coordinates do not fall within the ship size constraints.
@@ -209,18 +204,40 @@ public class Game {
      * @return true if ship char is found present in grid location. Otherwise, return false.
      */
     private static boolean coordinateProximityCheck(Coordinate first, Coordinate second) {
-        int lowestRow = Math.min(first.getRow(), second.getRow()), highestRow = Math.max(first.getRow(), second.getRow());
-        int lowestColumn = Math.min(first.getColumn(), second.getColumn()), highestColumn = Math.max(first.getColumn(), second.getColumn());
         // Loop over rows starting from one cell before and after the coordinates.
-        for(int row = lowestRow - 1; row <= highestRow + 1; row++) {
+        for(int row = lowestCoordinate(first,second).getRow() - 1; row <= highestCoordinate(first,second).getRow() + 1; row++) {
             // Loop over columns starting from one cell before and after the coordinates.
-            for (int column = lowestColumn - 1; column <= highestColumn + 1; column++) {
+            for (int column = lowestCoordinate(first,second).getColumn() - 1; column <= highestCoordinate(first,second).getColumn() + 1; column++) {
                 // if coordinates within constraints and char representing ship present, return true.
                 if (row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE)
                     if (gameBoard[row][column] == SHIP) return true;
             }
         }
         return false; // Return false if no ships are present within the boundaries searched.
+    }
+
+    /**
+     * Finds lowest row and column values.
+     * @param first
+     * @param second
+     * @return
+     */
+    private static Coordinate lowestCoordinate(Coordinate first, Coordinate second) {
+        int lowestRow = Math.min(first.getRow(), second.getRow()), lowestColumn = Math.min(first.getColumn(), second.getColumn());
+        Coordinate lowest = new Coordinate(lowestRow, lowestColumn);
+        return lowest;
+    }
+
+    /**
+     *
+     * @param first
+     * @param second
+     * @return
+     */
+    private static Coordinate highestCoordinate(Coordinate first, Coordinate second) {
+        int highestRow = Math.max(first.getRow(), second.getRow()), highestColumn = Math.max(first.getColumn(), second.getColumn());
+        Coordinate highest = new Coordinate(highestRow, highestColumn);
+        return highest;
     }
 
     // Checks that distance between coordinates match ship size.
@@ -242,5 +259,10 @@ public class Game {
     private static boolean coordinatesWithinConstraints(Coordinate coordinate) {
         return coordinate.getRow() >= 0 && coordinate.getRow() < BOARD_SIZE && coordinate.getColumn() >= 0 && coordinate.getColumn() < BOARD_SIZE;
     }
+
+    /**
+     * CREATE A GAMEBOARD CLASS???
+     * FOLLOW COMPILER WARNINGS.
+     */
 }
 
