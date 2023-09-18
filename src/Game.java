@@ -1,58 +1,24 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Game {
-    // Game board properties.
-    private static final int BOARD_SIZE = 10;
-    // Variable to track number of times method has been invoked.
-    private static int timesInvoked = 0;
-    // Initialise multi dimensional game board array.
-    private static char[][] gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
-    // Chars representing status of cells on the board.
-    private static final char SEA = '~', SHIP = 'O', HIT = 'X', MISS = 'M';
     // Initialise scanner for taking user input.
     private static final Scanner scanner = new Scanner(System.in);
+    private static final Coordinate coordinate = new Coordinate();
+    private static final GameBoard board = new GameBoard();
+    // Chars representing status of cells on the board.
+    private static final char SHIP = 'O', HIT = 'X', MISS = 'M';
+    // Initialise multi dimensional game board array.
+    private static char[][] gameBoard = new char[board.getBoardSize()][board.getBoardSize()];
 
     /**
      * Main method to get game running.
-     * @param args
+     * @param args nuf said.
      */
     public static void main(String[] args) {
-        // Initialise game board.
-        gameBoard = new char[BOARD_SIZE][BOARD_SIZE];
         // Print the game board.
-        printGameBoard(gameBoard);
+        board.printGameBoard(gameBoard);
         // Prompt user, starting the game.
         promptUser();
-    }
-
-    /**
-     * Prints out the game board in the users terminal.
-     * @param board pass game board to be kept up to date and relayed to user.
-     */
-    private static void printGameBoard(char[][] board) {
-        // Fill grid with chars representing the empty sea. (Only required on startup!)
-        if (timesInvoked < 1) for (char[] grid : board) Arrays.fill(grid, SEA);
-        // Formatting of column spacing.
-        System.out.print(" ");
-        // Print out column numbers and increment until GRID limit is reached.
-        for (int cols = 1; cols <= BOARD_SIZE; cols++) System.out.print(" " + cols);
-        // Print line for formatting.
-        System.out.println();
-        // Declare char for identifying rows.
-        char row = 'A';
-        // Loop over rows and columns to print game board.
-        for (int rows = 0; rows < BOARD_SIZE; rows++) {
-            System.out.print(row++);
-            for (int cols = 0; cols < BOARD_SIZE; cols++) {
-                System.out.print(" " + board[rows][cols]);
-            }
-            // More formatting.
-            System.out.println();
-        }
-        // Increment number of times method has been called.
-        timesInvoked++;
-        System.out.println();
     }
 
     /**
@@ -71,7 +37,7 @@ public class Game {
                     // Scanner takes first and second coordinate points as strings.
                     String firstCoordinate = scanner.next(), secondCoordinate = scanner.next();
                     // Convert string input into integer arrays storing row and column per.
-                    Coordinate first = convertCoordinates(firstCoordinate), second = convertCoordinates(secondCoordinate);
+                    Coordinate first = coordinate.convertCoordinates(firstCoordinate), second = coordinate.convertCoordinates(secondCoordinate);
                     // Check coordinates provided meet requirements.
                     if (checkCoordinates(first, second, battleship)) {
                         // Break if requirements met.
@@ -94,81 +60,47 @@ public class Game {
      */
     private static void placeBattleshipOnBoard(Coordinate first, Coordinate second) {
         // Start from first coordinate and stopping once the second one is reached.
-        for (int row = lowestCoordinate(first, second).getRow(); row <= highestCoordinate(first, second).getRow(); row++) {
-            for (int col = lowestCoordinate(first, second).getColumn(); col <= highestCoordinate(first, second).getColumn(); col++) gameBoard[row][col] = SHIP;
+        for (int row = coordinate.lowestCoordinate(first, second).getRow(); row <= coordinate.highestCoordinate(first, second).getRow(); row++) {
+            for (int col = coordinate.lowestCoordinate(first, second).getColumn(); col <= coordinate.highestCoordinate(first, second).getColumn(); col++) gameBoard[row][col] = SHIP;
         }
         System.out.println();
         // Print the updated game board for the user to see.
-        printGameBoard(gameBoard);
+        board.printGameBoard(gameBoard);
     }
 
     /**
-     * Take input from user and check whether they have hit a ship or not.
+     *
      */
     private static void plotGridByUserInput() {
-        // Prompt game start.
         System.out.println("The game starts!\n");
-        // Print the game board to the user.
-        printGameBoard(gameBoard);
-        // Prompt the user to enter their input.
+        board.printGameBoard(gameBoard);
         System.out.println("Take a shot!\n");
-        // Loop over input stage to make sure input is correct.
         while (true) {
-            try {
-                // Take users coordinate input as a string.
-                Coordinate coordinate = convertCoordinates(scanner.next());
-                // Check coordinates provided are legal.
-                if (coordinatesWithinConstraints(coordinate)) {
-                    if (checkForPresentShips(coordinate)) {
-                        // Confirm successful hit.
-                        gameBoard[coordinate.getRow()][coordinate.getColumn()] = HIT;
-                        // Print game board showing hit.
-                        printGameBoard(gameBoard);
-                        // Inform user they landed a hit.
-                        System.out.println("You hit a ship!\n");
-                    } else {
-                        // Otherwise, user has missed the target.
-                        gameBoard[coordinate.getRow()][coordinate.getColumn()] = MISS;
-                        // Print game board showing miss.
-                        printGameBoard(gameBoard);
-                        // Inform user they missed.
-                        System.out.println("You missed!\n");
-                    }
-                    break;
+            // Take users coordinate input as a string.
+            Coordinate userInput = coordinate.convertCoordinates(scanner.next());
+            // Check logic.
+            if (coordinatesWithinConstraints(userInput)) {
+                if (checkForPresentShips(userInput)) {
+                    // Confirm successful hit.
+                    gameBoard[userInput.getRow()][userInput.getColumn()] = HIT;
+                    board.printGameBoard(gameBoard);
+                    System.out.println("You hit a ship!\n");
                 } else {
-                    System.out.println("Error! You entered the wrong coordinates! Try again:\n");
+                    // Otherwise, user has missed the target.
+                    gameBoard[userInput.getRow()][userInput.getColumn()] = MISS;
+                    board.printGameBoard(gameBoard);
+                    System.out.println("You missed!\n");
                 }
-            } catch (Exception e) {
-                System.out.println(e.getMessage().contains("Error") ? "\n" + e.getMessage()
-                        : "\n" + new Exception(String.format("Error! %s. Try again:" + "\n",
-                        e.getLocalizedMessage())).getMessage());
+                break;
+            } else {
+                System.out.println("Error! You entered the wrong coordinates! Try again:\n");
             }
         }
     }
 
     /**
-     *  Converts input from user in a readable String form into integer input the computer
-     *      can understand.
-     * @param coordinate Takes String coordinate input from the user.
-     * @return returns Coordinate as an integer array storing the row[0] and column[1].
-     */
-    public static Coordinate convertCoordinates(String coordinate) {
-        // Get char from String denoting the row.
-        char inputRow = coordinate.charAt(0);
-        // Get integer using substring method denoting column.
-        int inputCol = Integer.parseInt(coordinate.substring(1));
-        // Convert char into integer.
-        int row = Character.toUpperCase(inputRow) - 'A';
-        // Subtract 1 to index input from 0 (computer array) rather than 1(human read).
-        int col = inputCol - 1;
-        // Store converted variables in integer array.
-        Coordinate coordinateConversion = new Coordinate(row, col);
-        // Return that coordinate array to be used by another method.
-        return coordinateConversion;
-    }
-
-    /**
      * Method to check coordinates are legal, meeting game constraints.
+     *
      * @param first first coordinate array.
      * @param second second coordinate array.
      * @param ship the battleship being used in time of loop.
@@ -176,8 +108,8 @@ public class Game {
      */
     private static boolean checkCoordinates(Coordinate first, Coordinate second, Battleship ship) {
         // Get specific char from coordinate array.
-        int rowLength = highestCoordinate(first, second).getRow() - lowestCoordinate(first, second).getRow(),
-                columnLength = highestCoordinate(first, second).getColumn() -lowestCoordinate(first, second).getColumn();
+        int rowLength = coordinate.highestCoordinate(first, second).getRow() - coordinate.lowestCoordinate(first, second).getRow(),
+                columnLength = coordinate.highestCoordinate(first, second).getColumn() - coordinate.lowestCoordinate(first, second).getColumn();
         // Check coordinates provided meet conditions.
         if (checkShipLength(rowLength, columnLength, ship)) {
             // If coordinates do not fall within the ship size constraints.
@@ -205,39 +137,15 @@ public class Game {
      */
     private static boolean coordinateProximityCheck(Coordinate first, Coordinate second) {
         // Loop over rows starting from one cell before and after the coordinates.
-        for(int row = lowestCoordinate(first,second).getRow() - 1; row <= highestCoordinate(first,second).getRow() + 1; row++) {
+        for(int row = coordinate.lowestCoordinate(first,second).getRow() - 1; row <= coordinate.highestCoordinate(first,second).getRow() + 1; row++) {
             // Loop over columns starting from one cell before and after the coordinates.
-            for (int column = lowestCoordinate(first,second).getColumn() - 1; column <= highestCoordinate(first,second).getColumn() + 1; column++) {
+            for (int column = coordinate.lowestCoordinate(first,second).getColumn() - 1; column <= coordinate.highestCoordinate(first,second).getColumn() + 1; column++) {
                 // if coordinates within constraints and char representing ship present, return true.
-                if (row >= 0 && row < BOARD_SIZE && column >= 0 && column < BOARD_SIZE)
+                if (row >= 0 && row < board.getBoardSize() && column >= 0 && column < board.getBoardSize())
                     if (gameBoard[row][column] == SHIP) return true;
             }
         }
         return false; // Return false if no ships are present within the boundaries searched.
-    }
-
-    /**
-     * Finds lowest row and column values.
-     * @param first
-     * @param second
-     * @return
-     */
-    private static Coordinate lowestCoordinate(Coordinate first, Coordinate second) {
-        int lowestRow = Math.min(first.getRow(), second.getRow()), lowestColumn = Math.min(first.getColumn(), second.getColumn());
-        Coordinate lowest = new Coordinate(lowestRow, lowestColumn);
-        return lowest;
-    }
-
-    /**
-     *
-     * @param first
-     * @param second
-     * @return
-     */
-    private static Coordinate highestCoordinate(Coordinate first, Coordinate second) {
-        int highestRow = Math.max(first.getRow(), second.getRow()), highestColumn = Math.max(first.getColumn(), second.getColumn());
-        Coordinate highest = new Coordinate(highestRow, highestColumn);
-        return highest;
     }
 
     // Checks that distance between coordinates match ship size.
@@ -257,12 +165,6 @@ public class Game {
 
     // Checks that coordinates are within the constraints of the game board.
     private static boolean coordinatesWithinConstraints(Coordinate coordinate) {
-        return coordinate.getRow() >= 0 && coordinate.getRow() < BOARD_SIZE && coordinate.getColumn() >= 0 && coordinate.getColumn() < BOARD_SIZE;
+        return coordinate.getRow() >= 0 && coordinate.getRow() < board.getBoardSize() && coordinate.getColumn() >= 0 && coordinate.getColumn() < board.getBoardSize();
     }
-
-    /**
-     * CREATE A GAMEBOARD CLASS???
-     * FOLLOW COMPILER WARNINGS.
-     */
 }
-
